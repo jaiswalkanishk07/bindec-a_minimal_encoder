@@ -1,0 +1,65 @@
+@import "tailwindcss";
+
+:root {
+  color-scheme: dark;
+  --bg: #07080d;
+  --ink: #eef2f6;
+  --muted: #8b93a7;
+  --line: rgba(255, 255, 255, 0.1);
+  --glass: rgba(16, 18, 28, 0.55);
+  --accent: #7ee0c6;
+}
+
+* { box-sizing: border-box; }
+
+html, body, #root {
+  min-height: 100%;
+  margin: 0;
+  background: var(--bg);
+  color: var(--ink);
+  font-family: "IBM Plex Mono", ui-monospace, monospace;
+}
+
+body {
+  padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
+}
+
+.display { font-family: "Instrument Serif", Georgia, serif; }
+
+.glass {
+  background: var(--glass);
+  border: 1px solid var(--line);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.12);
+  backdrop-filter: blur(22px) saturate(160%);
+}
+
+.aurora {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  background:
+    radial-gradient(900px 500px at 12% -10%, rgba(126, 224, 198, 0.18), transparent 55%),
+    radial-gradient(700px 420px at 90% 10%, rgba(110, 140, 255, 0.16), transparent 50%),
+    radial-gradient(600px 400px at 50% 110%, rgba(255, 176, 120, 0.08), transparent 50%),
+    linear-gradient(#07080d, #07080d);
+}
+
+.grid-fade {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  background-image:
+    linear-gradient(rgba(255,255,255,0.04) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(255,255,255,0.04) 1px, transparent 1px);
+  background-size: 48px 48px;
+  mask-image: radial-gradient(ellipse at center, black 30%, transparent 75%);
+  pointer-events: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
