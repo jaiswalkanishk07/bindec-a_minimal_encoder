@@ -1,3 +1,5 @@
+import { motion } from "framer-motion";
+
 export function GlassCard({ className = "", children }: { className?: string; children: React.ReactNode }) {
   return <section className={`glass rounded-3xl p-5 ${className}`}>{children}</section>;
 }

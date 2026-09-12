@@ -70,12 +70,19 @@ describe("api", () => {
     expect(res.json().result).toBe("1010");
   });
   it("enforces CORS allowlist", async () => {
-    const res = await app.inject({
+    const allowed = await app.inject({
+      method: "GET",
+      url: "/v1/health",
+      headers: { origin: "http://localhost:5173" },
+    });
+    expect(allowed.headers["access-control-allow-origin"]).toBe("http://localhost:5173");
+    const blocked = await app.inject({
       method: "GET",
       url: "/v1/health",
       headers: { origin: "https://evil.example.com" },
     });
-    expect(res.headers["access-control-allow-origin"]).toBeUndefined();
+    expect(blocked.statusCode).toBe(200);
+    expect(blocked.headers["access-control-allow-origin"]).toBeUndefined();
   });
   it("rate limits", async () => {
     const hits = [];

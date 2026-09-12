@@ -40,10 +40,7 @@ export async function buildApp(opts: AppOptions = {}) {
   await app.register(helmet);
   const allowed = opts.corsOrigin ?? parseCorsOrigins(process.env.CORS_ORIGIN);
   await app.register(cors, {
-    origin: (origin, cb) => {
-      if (!origin || allowed.includes(origin)) return cb(null, true);
-      return cb(new Error("Origin not allowed"), false);
-    },
+    origin: (origin, cb) => cb(null, !!origin && allowed.includes(origin)),
   });
   await app.register(rateLimit, { max: opts.rateMax ?? 120, timeWindow: "1 minute" });
 
