@@ -16,9 +16,17 @@ bindec/
 │   ├── web/                     # React 19 + Vite 7 + Tailwind 4 + Framer Motion
 │   │   ├── public/              # PWA manifest + icon.svg
 │   │   ├── src/
-│   │   │   ├── components/ui.tsx# glass primitives (GlassCard, BasePill, Key, SectionLabel)
+│   │   │   ├── components/
+│   │   │   │   ├── ui.tsx       # glass primitives (GlassCard, BasePill, Key, SectionLabel)
+│   │   │   │   └── fx/Background.tsx  # aurora + grid backdrop layers
+│   │   │   ├── features/
+│   │   │   │   ├── convert/ConsoleCard.tsx   # pickers, input, keypad, result, copy
+│   │   │   │   ├── bits/BitRail.tsx          # width toggles + clickable bit cells
+│   │   │   │   ├── explain/ExplainPanel.tsx  # staggered steps
+│   │   │   │   └── history/HistoryPanel.tsx  # local session history
 │   │   │   ├── lib/             # api client (local+remote), history (localStorage)
-│   │   │   ├── App.tsx          # shell state container (being split in Phase B)
+│   │   │   ├── App.tsx          # shell state container composing the features
+│   │   │   ├── tests/           # vitest parity suite (@bindec/core in browser workspace)
 │   │   │   └── index.css        # tokens, glass, aurora/grid, reduced-motion
 │   │   └── capacitor.config.json# appId dev.bindec.app, webDir dist
 │   └── api/                     # Fastify 5 + TypeScript
@@ -189,7 +197,7 @@ Dark instrument panel. CSS tokens in `index.css` (`--bg #07080d`, `--ink #eef2f6
 ## 5. Testing
 
 ```
-npm test          # root → core tests → api tests (web parity suite lands in Phase B)
+npm test          # root → core → api → web (parity) tests
 npm run build     # root → vite production build of apps/web
 ```
 
@@ -197,9 +205,10 @@ npm run build     # root → vite production build of apps/web
 |---|---|---|
 | `packages/core` | 10 | BigInt/prefixes/grouping, signed 2's-complement, overflow, empty/invalid, same-base, validate, explain |
 | `apps/api` | 10 | health, meta, validate, convert, SAME_BASE, explain, GET convert, CORS allow/block, rate limit 429 |
+| `apps/web` | 6 | Same `@bindec/core` cases re-run in the browser workspace (client/server parity) |
 
 Client/server parity is enforced because **the same `@bindec/core` functions** run in the browser
-(optimistic) and the API (canonical); Phase B adds a web-workspace vitest suite that re-runs core cases.
+(optimistic) and the API (canonical). A web-workspace vitest suite re-runs the shared core cases.
 
 ```mermaid
 flowchart LR
