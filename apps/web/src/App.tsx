@@ -32,6 +32,7 @@ export default function App() {
   const [steps, setSteps] = useState<Step[]>([]);
   const [history, setHistory] = useState<Hist[]>(() => loadHistory());
   const [copied, setCopied] = useState(false);
+  const [swaps, setSwaps] = useState(0);
 
   const payload = useMemo(
     () => ({ value, from, to, signed, bitWidth: from === "bin" || to === "bin" ? bitWidth : undefined }),
@@ -83,6 +84,7 @@ export default function App() {
     setFrom(to);
     setTo(from);
     setValue(result || value);
+    setSwaps((s) => s + 1);
   }
 
   function toggleBit(i: number) {
@@ -141,6 +143,7 @@ export default function App() {
           error={error}
           degraded={degraded}
           copied={copied}
+          swaps={swaps}
           onFrom={setFrom}
           onTo={setTo}
           onValue={setValue}

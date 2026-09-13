@@ -12,6 +12,7 @@ export default function ConsoleCard({
   error,
   degraded,
   copied,
+  swaps,
   onFrom,
   onTo,
   onValue,
@@ -25,6 +26,7 @@ export default function ConsoleCard({
   error: string;
   degraded: boolean;
   copied: boolean;
+  swaps: number;
   onFrom: (b: Base) => void;
   onTo: (b: Base) => void;
   onValue: (v: string) => void;
@@ -41,7 +43,14 @@ export default function ConsoleCard({
             </BasePill>
           ))}
         </div>
-        <motion.button type="button" whileTap={{ scale: 0.9 }} onClick={onSwap} className="ml-auto rounded-full bg-white/10 px-3 py-1.5 text-xs">
+        <motion.button
+          type="button"
+          whileTap={{ scale: 0.9 }}
+          animate={{ rotate: swaps * 180 }}
+          transition={{ type: "spring", stiffness: 260, damping: 20 }}
+          onClick={onSwap}
+          className="ml-auto rounded-full bg-white/10 px-3 py-1.5 text-xs"
+        >
           swap
         </motion.button>
         <div className="flex gap-1.5">
@@ -84,6 +93,7 @@ export default function ConsoleCard({
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -6 }}
               className="display mt-1 text-3xl italic"
+              transition={{ duration: 0.18 }}
             >
               {error || result || "—"}
             </motion.p>
