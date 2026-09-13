@@ -1,6 +1,7 @@
 import { motion } from "framer-motion";
+import type { ReactNode } from "react";
 
-export function GlassCard({ className = "", children }: { className?: string; children: React.ReactNode }) {
+export function GlassCard({ className = "", children }: { className?: string; children: ReactNode }) {
   return <section className={`glass rounded-3xl p-5 ${className}`}>{children}</section>;
 }
 
@@ -10,7 +11,7 @@ export function BasePill({
   onClick,
 }: {
   active: boolean;
-  children: React.ReactNode;
+  children: ReactNode;
   onClick: () => void;
 }) {
   return (
@@ -31,7 +32,7 @@ export function Key({
   onPress,
   className = "",
 }: {
-  children: React.ReactNode;
+  children: ReactNode;
   onPress: () => void;
   className?: string;
 }) {
@@ -47,6 +48,6 @@ export function Key({
   );
 }
 
-export function SectionLabel({ children }: { children: React.ReactNode }) {
+export function SectionLabel({ children }: { children: ReactNode }) {
   return <p className="text-xs tracking-[0.2em] text-[var(--muted)]">{children}</p>;
 }

@@ -16,9 +16,17 @@ bindec/
 │   ├── web/                     # React 19 + Vite 7 + Tailwind 4 + Framer Motion
 │   │   ├── public/              # PWA manifest + icon.svg
 │   │   ├── src/
-│   │   │   ├── components/ui.tsx# glass primitives (GlassCard, BasePill, Key, SectionLabel)
+│   │   │   ├── components/
+│   │   │   │   ├── ui.tsx       # glass primitives (GlassCard, BasePill, Key, SectionLabel)
+│   │   │   │   └── fx/Background.tsx  # aurora + grid backdrop layers
+│   │   │   ├── features/
+│   │   │   │   ├── convert/ConsoleCard.tsx   # pickers, input, keypad, result, copy
+│   │   │   │   ├── bits/BitRail.tsx          # width toggles + clickable bit cells
+│   │   │   │   ├── explain/ExplainPanel.tsx  # staggered steps
+│   │   │   │   └── history/HistoryPanel.tsx  # local session history
 │   │   │   ├── lib/             # api client (local+remote), history (localStorage)
-│   │   │   ├── App.tsx          # shell state container (being split in Phase B)
+│   │   │   ├── App.tsx          # shell state container composing the features
+│   │   │   ├── tests/           # vitest parity suite (@bindec/core in browser workspace)
 │   │   │   └── index.css        # tokens, glass, aurora/grid, reduced-motion
 │   │   └── capacitor.config.json# appId dev.bindec.app, webDir dist
 │   └── api/                     # Fastify 5 + TypeScript
@@ -78,6 +86,24 @@ on the integer path). JSON cannot carry BigInt safely, so the API never returns 
 ### Error taxonomy
 `EMPTY` · `INVALID_DIGIT` · `OVERFLOW_WIDTH` · `UNSUPPORTED_FRACTION` · `SAME_BASE`
 → serialized as `{ type: "urn:bindec:error:<CODE>", title, status, detail }`.
+
+### Request pipeline
+
+```mermaid
+flowchart TD
+  A["raw string"] --> B["trim + strip _ / spaces"]
+  B --> C{"prefix present?"}
+  C -->|"0b / 0x / 0o / 0d"| D["strip prefix"]
+  C -->|no| E{"per-base charset ok?"}
+  D --> E
+  E -->|no| F["INVALID_DIGIT"]
+  E -->|yes| G["parse with BigInt"]
+  G --> H{"signed + binary?"}
+  H -->|yes| I["two's complement (bitWidth)"]
+  H -->|no| J["convert to target base"]
+  I --> K["string result (BigInt-safe)"]
+  J --> K
+```
 
 ---
 

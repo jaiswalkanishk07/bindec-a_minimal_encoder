@@ -20,25 +20,26 @@ independently shippable — push to git after each one.
 
 ---
 
-## ⏳ Phase B — Web restructure (NEXT)
+## ✅ Phase B — Web restructure (DONE)
 
 **Goal:** split the 272-line `App.tsx` into the hierarchy from the original spec, with zero
-behavior change. Already created: `src/components/ui.tsx` (GlassCard, BasePill, Key, SectionLabel) — **not wired yet**.
+behavior change.
 
-- [ ] `src/components/fx/Background.tsx` — aurora + grid layers
-- [ ] `src/features/convert/ConsoleCard.tsx` — base pickers, input, keypad, result, copy/share, swap
-- [ ] `src/features/bits/BitRail.tsx` — 8/16/32/64 width toggles + clickable bit cells
-- [ ] `src/features/explain/ExplainPanel.tsx` — staggered explain steps
-- [ ] `src/features/history/HistoryPanel.tsx` — localStorage recent list
-- [ ] `App.tsx` reduced to state container + composition; wire `ui.tsx` primitives
-- [ ] Web **vitest parity suite** (`apps/web/tests/core.parity.test.ts`) re-running `@bindec/core` cases in the web workspace (client/server parity requirement); add `test` script + vitest devDep to `apps/web`, include `tests` in its tsconfig
-- [ ] Root `npm test` runs all three workspaces
+- [x] `src/components/fx/Background.tsx` — aurora + grid layers
+- [x] `src/features/convert/ConsoleCard.tsx` — base pickers, input, keypad, result, copy, swap
+- [x] `src/features/bits/BitRail.tsx` — 8/16/32/64 width toggles + clickable bit cells (bumped to 40px thumb targets)
+- [x] `src/features/explain/ExplainPanel.tsx` — staggered explain steps
+- [x] `src/features/history/HistoryPanel.tsx` — localStorage recent list
+- [x] `App.tsx` reduced to state container + composition; `ui.tsx` primitives wired (incl. `ReactNode` import fix)
+- [x] Web **vitest parity suite** — `apps/web/tests/core.parity.test.ts` (6 tests), `test` script + vitest devDep, tsconfig includes `tests`
+- [x] Root `npm test` runs all three workspaces
+- [x] Bonus: clipboard fallback (textarea + exec) for older WebViews
 
-**Verify:** `npm test` green everywhere, `vite build` ✓, manual click-through unchanged.
+**Verify:** core 10/10 ✓ · api 10/10 ✓ · web parity 6/6 ✓ · `vite build` ✓ (442 modules).
 
 ---
 
-## ⏳ Phase C — Visual polish (minimal per user)
+## ⏳ Phase C — Visual polish (NEXT)
 
 **Goal:** keep the minimal dashboard, make motion smooth and tasteful, honor `prefers-reduced-motion`.
 
