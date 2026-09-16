@@ -1,6 +1,6 @@
 import type { Base } from "@bindec/core";
 import { SectionLabel } from "../../components/ui.tsx";
-import type { Hist } from "../../lib/history.ts";
+import type { Hist } from "../../lib.ts";
 
 export default function HistoryPanel({
   history,
@@ -18,7 +18,7 @@ export default function HistoryPanel({
             key={h.at}
             type="button"
             onClick={() => onPick(h.from as Base, h.to as Base, h.value)}
-            className="glass rounded-2xl px-4 py-3 text-left text-sm"
+            className="glass rounded-xl px-4 py-3 text-left text-sm"
           >
             {h.value} · {h.from} → {h.to} = {h.result}
           </button>

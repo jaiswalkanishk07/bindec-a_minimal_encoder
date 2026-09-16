@@ -5,8 +5,7 @@ import ConsoleCard from "./features/convert/ConsoleCard.tsx";
 import BitRail from "./features/bits/BitRail.tsx";
 import ExplainPanel from "./features/explain/ExplainPanel.tsx";
 import HistoryPanel from "./features/history/HistoryPanel.tsx";
-import { localConvert, remoteConvert, remoteExplain } from "./lib/api.ts";
-import { loadHistory, pushHistory, type Hist } from "./lib/history.ts";
+import { localConvert, remoteConvert, remoteExplain, loadHistory, pushHistory, type Hist } from "./lib.ts";
 
 const BASES: Base[] = ["bin", "dec", "hex", "oct"];
 
@@ -32,6 +31,7 @@ export default function App() {
   const [steps, setSteps] = useState<Step[]>([]);
   const [history, setHistory] = useState<Hist[]>(() => loadHistory());
   const [copied, setCopied] = useState(false);
+  const [swaps, setSwaps] = useState(0);
 
   const payload = useMemo(
     () => ({ value, from, to, signed, bitWidth: from === "bin" || to === "bin" ? bitWidth : undefined }),
@@ -83,6 +83,7 @@ export default function App() {
     setFrom(to);
     setTo(from);
     setValue(result || value);
+    setSwaps((s) => s + 1);
   }
 
   function toggleBit(i: number) {
@@ -126,7 +127,7 @@ export default function App() {
         <header className="flex items-end justify-between gap-4">
           <div>
             <p className="text-xs tracking-[0.28em] text-[var(--muted)]">BINDEC</p>
-            <h1 className="display mt-1 text-4xl italic text-[var(--ink)]">Number console</h1>
+            <h1 className="display mt-1 text-4xl text-[var(--ink)]">Number console</h1>
           </div>
           <button type="button" onClick={() => setSigned((s) => !s)} className="glass rounded-full px-3 py-1.5 text-xs">
             {signed ? "signed" : "unsigned"}
@@ -141,6 +142,7 @@ export default function App() {
           error={error}
           degraded={degraded}
           copied={copied}
+          swaps={swaps}
           onFrom={setFrom}
           onTo={setTo}
           onValue={setValue}

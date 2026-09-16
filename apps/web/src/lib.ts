@@ -1,5 +1,7 @@
 import { convert, ConvertError, explain, type Base, type BitWidth, type Step } from "@bindec/core";
 
+// --- API client (local + remote) ---
+
 export type Payload = {
   value: string;
   from: Base;
@@ -38,4 +40,24 @@ export async function remoteExplain(p: Payload): Promise<{ steps: Step[]; degrad
   } catch {
     return { steps: explain(p).steps, degraded: true };
   }
+}
+
+// --- localStorage history ---
+
+const KEY = "bindec.history";
+
+export type Hist = { at: number; from: string; to: string; value: string; result: string };
+
+export function loadHistory(): Hist[] {
+  try {
+    return JSON.parse(localStorage.getItem(KEY) ?? "[]") as Hist[];
+  } catch {
+    return [];
+  }
+}
+
+export function pushHistory(entry: Hist) {
+  const next = [entry, ...loadHistory().filter((h) => h.value !== entry.value || h.from !== entry.from)].slice(0, 8);
+  localStorage.setItem(KEY, JSON.stringify(next));
+  return next;
 }

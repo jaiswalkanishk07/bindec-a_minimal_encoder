@@ -1,4 +1,4 @@
-import { motion } from "framer-motion";
+import { AnimatePresence, motion } from "framer-motion";
 import type { BitWidth } from "@bindec/core";
 import { GlassCard, SectionLabel } from "../../components/ui.tsx";
 
@@ -33,17 +33,23 @@ export default function BitRail({
         </div>
       </div>
       <div className="flex flex-wrap gap-1.5">
-        {bits.map((bit, i) => (
-          <motion.button
-            key={`${bitWidth}-${i}`}
-            type="button"
-            whileTap={{ scale: 0.92 }}
-            onClick={() => onToggle(i)}
-            className={`h-10 w-10 min-w-10 rounded-lg text-sm ${bit === "1" ? "bg-[var(--accent)] text-[#07201a]" : "bg-white/8"}`}
-          >
-            {bit}
-          </motion.button>
-        ))}
+        <AnimatePresence mode="popLayout">
+          {bits.map((bit, i) => (
+            <motion.button
+              key={`${bitWidth}-${i}-${bit}`}
+              type="button"
+              initial={{ scale: 0.55 }}
+              animate={{ scale: 1 }}
+              exit={{ scale: 0.55, opacity: 0 }}
+              transition={{ type: "spring", stiffness: 460, damping: 24 }}
+              whileTap={{ scale: 0.9 }}
+              onClick={() => onToggle(i)}
+              className={`h-10 w-10 min-w-10 rounded-lg text-sm ${bit === "1" ? "bg-[var(--accent)] text-[#07201a]" : "bg-white/8"}`}
+            >
+              {bit}
+            </motion.button>
+          ))}
+        </AnimatePresence>
       </div>
     </GlassCard>
   );

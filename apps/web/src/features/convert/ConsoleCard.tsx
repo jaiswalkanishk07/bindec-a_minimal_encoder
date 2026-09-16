@@ -12,6 +12,7 @@ export default function ConsoleCard({
   error,
   degraded,
   copied,
+  swaps,
   onFrom,
   onTo,
   onValue,
@@ -25,6 +26,7 @@ export default function ConsoleCard({
   error: string;
   degraded: boolean;
   copied: boolean;
+  swaps: number;
   onFrom: (b: Base) => void;
   onTo: (b: Base) => void;
   onValue: (v: string) => void;
@@ -32,7 +34,7 @@ export default function ConsoleCard({
   onCopy: () => void;
 }) {
   return (
-    <motion.section layout className="glass rounded-3xl p-5 sm:p-6">
+    <motion.section layout className="glass rounded-2xl p-5 sm:p-6">
       <div className="flex flex-wrap items-center gap-2">
         <div className="flex gap-1.5">
           {BASES.map((b) => (
@@ -41,7 +43,14 @@ export default function ConsoleCard({
             </BasePill>
           ))}
         </div>
-        <motion.button type="button" whileTap={{ scale: 0.9 }} onClick={onSwap} className="ml-auto rounded-full bg-white/10 px-3 py-1.5 text-xs">
+        <motion.button
+          type="button"
+          whileTap={{ scale: 0.9 }}
+          animate={{ rotate: swaps * 180 }}
+          transition={{ type: "spring", stiffness: 260, damping: 20 }}
+          onClick={onSwap}
+          className="ml-auto rounded-full bg-white/10 px-3 py-1.5 text-xs"
+        >
           swap
         </motion.button>
         <div className="flex gap-1.5">
@@ -61,7 +70,7 @@ export default function ConsoleCard({
         autoCapitalize="off"
         autoCorrect="off"
         spellCheck={false}
-        className="mt-2 w-full rounded-2xl border border-white/10 bg-black/30 px-4 py-4 text-2xl outline-none focus:border-[var(--accent)]"
+        className="mt-2 w-full rounded-xl border border-white/10 bg-black/30 px-4 py-4 text-2xl outline-none focus:border-[var(--accent)]"
       />
 
       {from === "bin" && (
@@ -83,9 +92,10 @@ export default function ConsoleCard({
               initial={{ opacity: 0, y: 6 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -6 }}
-              className="display mt-1 text-3xl italic"
+              className="display mt-1 text-3xl"
+              transition={{ duration: 0.18 }}
             >
-              {error || result || "—"}
+              {error || result || "-"}
             </motion.p>
           </AnimatePresence>
         </div>
@@ -93,7 +103,7 @@ export default function ConsoleCard({
           {copied ? "copied" : "copy"}
         </button>
       </div>
-      {degraded && <p className="mt-3 text-xs text-amber-300/80">API offline — using local core</p>}
+      {degraded && <p className="mt-3 text-xs text-amber-300/80">API offline. Using local core.</p>}
     </motion.section>
   );
 }
