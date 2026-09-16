@@ -24,11 +24,10 @@ bindec/
 │   │   │   │   ├── bits/BitRail.tsx          # width toggles + clickable bit cells
 │   │   │   │   ├── explain/ExplainPanel.tsx  # staggered steps
 │   │   │   │   └── history/HistoryPanel.tsx  # local session history
-│   │   │   ├── lib/             # api client (local+remote), history (localStorage)
+│   │   │   ├── lib.ts           # api client (local+remote) + localStorage history
 │   │   │   ├── App.tsx          # shell state container composing the features
 │   │   │   ├── tests/           # vitest parity suite (@bindec/core in browser workspace)
 │   │   │   └── index.css        # tokens, glass, aurora/grid, reduced-motion
-│   │   └── capacitor.config.json# appId dev.bindec.app, webDir dist
 │   └── api/                     # Fastify 5 + TypeScript
 │       ├── src/app.ts           # plugins + routes + error handling (RFC7807)
 │       ├── src/server.ts        # boot on PORT (default 8787, host 0.0.0.0)
@@ -176,7 +175,7 @@ sequenceDiagram
 
 - **Stack:** React 19, Vite 7, Tailwind CSS 4 (via `@tailwindcss/vite`), Framer Motion, TypeScript strict.
 - **Shell:** full-viewport aurora/grid backdrop, glass cards, safe-area padding, `viewport-fit=cover`.
-- **Fonts:** Instrument Serif (display italic titles) + IBM Plex Mono (values/bits).
+- **Fonts:** Inter (display) + IBM Plex Mono (values/bits).
 - **Console:** from/to base pickers (auto-swap on conflict), swap, live result with AnimatePresence
   reveals, copy button, binary 0/1 keypad, signed/unsigned toggle.
 - **Bit rail:** 8/16/32/64 toggles; clicking a cell flips that bit and re-converts instantly.
@@ -185,7 +184,6 @@ sequenceDiagram
 - **Share/copy:** URL stays in sync via `?from&to&v`; result copy via Clipboard API.
 - **Degraded mode:** on API failure, local result is kept and a banner is shown.
 - **PWA:** `manifest.webmanifest` + `icon.svg`.
-- **Capacitor:** `capacitor.config.json` → `npx cap add android` later.
 
 ### Design language
 Dark instrument panel. CSS tokens in `index.css` (`--bg #07080d`, `--ink #eef2f6`,
@@ -233,9 +231,4 @@ npm run dev        # concurrently: API :8787 + Web :5173
 - API env: `PORT=8787`, `CORS_ORIGIN=http://localhost:5173`
 
 ### Native shell (later)
-```bash
-cd apps/web
-npx cap init
-npx cap add android
-```
-`webDir` is already `dist`; production UI is the same web build wrapped by Capacitor.
+Out of scope for v1. The production web build (`dist/`) is static and WebView-ready when the time comes.
