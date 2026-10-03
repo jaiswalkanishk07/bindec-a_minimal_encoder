@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { ConvertError, convert, validate } from "@bindec/core";
+import { ConvertError, convert, validate, views } from "@bindec/core";
 
 // Client/server parity: the same @bindec/core functions run in the browser (optimistic)
 // and the API (canonical). Re-running the shared cases in the web workspace proves parity.
@@ -29,5 +29,11 @@ describe("web parity — @bindec/core in the browser workspace", () => {
   it("rejects same base and bad digits", () => {
     expect(() => validate({ value: "10", from: "dec", to: "dec" })).toThrow(ConvertError);
     expect(() => convert({ value: "102", from: "bin", to: "dec" })).toThrow(/Invalid/);
+  });
+  it("scratchpad views match core", () => {
+    const v = views({ value: "755", from: "oct" });
+    expect(v.perm.rwx).toBe("rwx r-x r-x");
+    expect(v.color.valid).toBe(true);
+    expect(views({ value: "4869", from: "hex" }).ascii.text).toBe("Hi");
   });
 });

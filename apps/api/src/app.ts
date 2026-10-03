@@ -2,7 +2,7 @@ import Fastify from "fastify";
 import cors from "@fastify/cors";
 import helmet from "@fastify/helmet";
 import rateLimit from "@fastify/rate-limit";
-import { BASES, BIT_WIDTHS, ConvertError, convert, explain, META, problem, validate, type Base, type BitWidth, type ConvertRequest } from "@bindec/core";
+import { BASES, BIT_WIDTHS, ConvertError, convert, explain, META, problem, validate, views, type Base, type BitWidth, type ConvertRequest } from "@bindec/core";
 
 function isBase(v: unknown): v is Base {
   return typeof v === "string" && (BASES as readonly string[]).includes(v);
@@ -26,6 +26,13 @@ function parseBody(body: unknown): ConvertRequest {
     signed: Boolean(b.signed),
     bitWidth: isWidth(bitWidth) ? bitWidth : undefined,
   };
+}
+
+function parseViewsBody(body: unknown): { value: string; from: Base } {
+  const b = (body ?? {}) as Record<string, unknown>;
+  if (typeof b.value !== "string") throw new ConvertError("EMPTY", "value must be a string.");
+  if (!isBase(b.from)) throw new ConvertError("INVALID_DIGIT", "from must be bin, dec, hex, or oct.");
+  return { value: b.value, from: b.from };
 }
 
 export type AppOptions = { corsOrigin?: string[]; rateMax?: number };
@@ -63,6 +70,7 @@ export async function buildApp(opts: AppOptions = {}) {
   app.post("/v1/validate", async (req) => validate(parseBody(req.body)));
   app.post("/v1/convert", async (req) => convert(parseBody(req.body)));
   app.post("/v1/explain", async (req) => explain(parseBody(req.body)));
+  app.post("/v1/views", async (req) => views(parseViewsBody(req.body)));
 
   app.get("/v1/convert", async (req) => {
     const q = req.query as Record<string, string | undefined>;

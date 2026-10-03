@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { ConvertError, convert, explain, validate } from "../src/index.ts";
+import { asciiView, colorView, ConvertError, convert, explain, permView, validate, views } from "../src/index.ts";
 
 describe("convert", () => {
   it("bin to dec", () => {
@@ -41,5 +41,41 @@ describe("convert", () => {
     const e = explain({ value: "101", from: "bin", to: "dec" });
     expect(e.steps.length).toBeGreaterThan(1);
     expect(e.result).toBe("5");
+  });
+});
+
+describe("views", () => {
+  it("perm maps octal to rwx", () => {
+    expect(permView({ value: "755", from: "oct" })).toMatchObject({ octal: "755", rwx: "rwx r-x r-x", valid: true });
+    expect(permView({ value: "493", from: "dec" })).toMatchObject({ rwx: "rwx r-x r-x", valid: true });
+    expect(permView({ value: "0o644", from: "oct" })).toMatchObject({ rwx: "rw- r-- r--", valid: true });
+  });
+  it("perm rejects out of range", () => {
+    expect(permView({ value: "9999", from: "dec" }).valid).toBe(false);
+    expect(permView({ value: "", from: "dec" }).valid).toBe(false);
+  });
+  it("ascii decodes printable bytes", () => {
+    const a = asciiView({ value: "4869", from: "hex" });
+    expect(a.printable).toBe(true);
+    expect(a.text).toBe("Hi");
+  });
+  it("ascii marks non-printable", () => {
+    expect(asciiView({ value: "ff", from: "hex" }).printable).toBe(false);
+    expect(asciiView({ value: "0", from: "dec" }).printable).toBe(false);
+  });
+  it("color splits rgb", () => {
+    expect(colorView({ value: "ff7f50", from: "hex" })).toMatchObject({
+      hex: "#ff7f50",
+      rgb: { r: 255, g: 127, b: 80 },
+      valid: true,
+    });
+    expect(colorView({ value: "16711680", from: "dec" }).hex).toBe("#ff0000");
+    expect(colorView({ value: "1ffffff", from: "hex" }).valid).toBe(false);
+  });
+  it("views bundles all three", () => {
+    const v = views({ value: "644", from: "oct" });
+    expect(v.perm.rwx).toBe("rw- r-- r--");
+    expect(v.ascii.bytes).toEqual([1, 164]);
+    expect(v.color.valid).toBe(true);
   });
 });

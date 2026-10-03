@@ -69,6 +69,26 @@ describe("api", () => {
     const res = await app.inject({ method: "GET", url: "/v1/convert?from=dec&to=bin&value=10" });
     expect(res.json().result).toBe("1010");
   });
+  it("views returns perm/ascii/color", async () => {
+    const res = await app.inject({
+      method: "POST",
+      url: "/v1/views",
+      payload: { value: "755", from: "oct" },
+    });
+    expect(res.statusCode).toBe(200);
+    const body = res.json();
+    expect(body.perm.rwx).toBe("rwx r-x r-x");
+    expect(body.color.valid).toBe(true);
+    expect(Array.isArray(body.ascii.bytes)).toBe(true);
+  });
+  it("views rejects bad from", async () => {
+    const res = await app.inject({
+      method: "POST",
+      url: "/v1/views",
+      payload: { value: "10", from: "nope" },
+    });
+    expect(res.statusCode).toBe(400);
+  });
   it("enforces CORS allowlist", async () => {
     const allowed = await app.inject({
       method: "GET",

@@ -23,6 +23,7 @@ bindec/
 │   │   │   │   ├── convert/ConsoleCard.tsx   # pickers, input, keypad, result, copy
 │   │   │   │   ├── bits/BitRail.tsx          # width toggles + clickable bit cells
 │   │   │   │   ├── explain/ExplainPanel.tsx  # staggered steps
+│   │   │   │   ├── scratchpad/ScratchpadPanel.tsx  # perms, ascii, color views
 │   │   │   │   └── history/HistoryPanel.tsx  # local session history
 │   │   │   ├── lib.ts           # api client (local+remote) + localStorage history
 │   │   │   ├── App.tsx          # shell state container composing the features
@@ -85,6 +86,8 @@ on the integer path). JSON cannot carry BigInt safely, so the API never returns 
 | `validate(req)` | Normalize + field errors without converting |
 | `explain(req)` | Ordered steps (powers of 2 / successive division) |
 | `normalizeDigits(value, from)` | Trim, strip `_`/spaces, strip `0b/0x/0o/0d`, canonicalize |
+| `views({ value, from })` | Scratchpad bundle: `{ perm, ascii, color }` over the current value |
+| `permView` / `asciiView` / `colorView` | Unix mode to rwx, bytes to printable text, value to 24-bit rgb |
 | `META` | `{ bases, bitWidths, maxDigits: 1024 }` |
 | `ConvertError`, `ErrorCode`, `problem()` | Structured errors (RFC7807) |
 | `BASES`, `BIT_WIDTHS`, `Base`, `BitWidth`, types | Type-level contracts |
@@ -141,6 +144,7 @@ Plugins: **Helmet** · **CORS allowlist** (`CORS_ORIGIN` env, comma-separated; d
 | POST | `/v1/validate` | Normalize + field errors without converting |
 | POST | `/v1/convert` | Canonical convert |
 | POST | `/v1/explain` | Ordered steps |
+| POST | `/v1/views` | Scratchpad bundle `{ perm, ascii, color }` over `{ value, from }` |
 | GET | `/v1/convert?from&to&v` | Same as POST, for shareable URLs |
 
 `buildApp(opts?)` — injectable `{ corsOrigin, rateMax }` for tests → currently **10/10 passing**.
@@ -181,6 +185,7 @@ sequenceDiagram
 - **Bit rail:** 8/16/32/64 toggles; clicking a cell flips that bit and re-converts instantly.
 - **Explain:** staggered step cards — `1×2^3 + 0×2^2 + …` from `POST /v1/explain` (local fallback).
 - **History:** last 8 conversions in `localStorage` (`bindec.history`), click to restore.
+- **Scratchpad:** perms (`755` to `rwx r-x r-x`), ascii bytes as text, and 24-bit color swatch. Display-only views over the current value.
 - **Share/copy:** URL stays in sync via `?from&to&v`; result copy via Clipboard API.
 - **Degraded mode:** on API failure, local result is kept and a banner is shown.
 - **PWA:** `manifest.webmanifest` + `icon.svg`.
@@ -201,9 +206,9 @@ npm run build     # root → vite production build of apps/web
 
 | Suite | Count | Covers |
 |---|---|---|
-| `packages/core` | 10 | BigInt/prefixes/grouping, signed 2's-complement, overflow, empty/invalid, same-base, validate, explain |
-| `apps/api` | 10 | health, meta, validate, convert, SAME_BASE, explain, GET convert, CORS allow/block, rate limit 429 |
-| `apps/web` | 6 | Same `@bindec/core` cases re-run in the browser workspace (client/server parity) |
+| `packages/core` | 16 | Convert/validate/explain + scratchpad views (perm, ascii, color) |
+| `apps/api` | 12 | health, meta, validate, convert, SAME_BASE, explain, GET convert, views, CORS allow/block, rate limit 429 |
+| `apps/web` | 7 | Same `@bindec/core` cases re-run in the browser workspace (client/server parity) |
 
 Client/server parity is enforced because **the same `@bindec/core` functions** run in the browser
 (optimistic) and the API (canonical). A web-workspace vitest suite re-runs the shared core cases.

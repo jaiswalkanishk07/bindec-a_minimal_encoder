@@ -1,9 +1,10 @@
 import { useEffect, useMemo, useState } from "react";
-import { ConvertError, type Base, type BitWidth, type Step } from "@bindec/core";
+import { ConvertError, views, type AsciiView, type Base, type BitWidth, type ColorView, type PermView, type Step } from "@bindec/core";
 import Background from "./components/fx/Background.tsx";
 import ConsoleCard from "./features/convert/ConsoleCard.tsx";
 import BitRail from "./features/bits/BitRail.tsx";
 import ExplainPanel from "./features/explain/ExplainPanel.tsx";
+import ScratchpadPanel from "./features/scratchpad/ScratchpadPanel.tsx";
 import HistoryPanel from "./features/history/HistoryPanel.tsx";
 import { localConvert, remoteConvert, remoteExplain, loadHistory, pushHistory, type Hist } from "./lib.ts";
 
@@ -32,6 +33,18 @@ export default function App() {
   const [history, setHistory] = useState<Hist[]>(() => loadHistory());
   const [copied, setCopied] = useState(false);
   const [swaps, setSwaps] = useState(0);
+
+  const scratch = useMemo(() => {
+    if (!value.trim()) return null;
+    try {
+      return views({ value, from });
+    } catch {
+      return null;
+    }
+  }, [value, from]);
+  const perm: PermView = scratch?.perm ?? { octal: "", rwx: "", valid: false };
+  const ascii: AsciiView = scratch?.ascii ?? { text: "", bytes: [], printable: false };
+  const color: ColorView = scratch?.color ?? { hex: "", rgb: null, css: null, valid: false };
 
   const payload = useMemo(
     () => ({ value, from, to, signed, bitWidth: from === "bin" || to === "bin" ? bitWidth : undefined }),
@@ -153,6 +166,8 @@ export default function App() {
         <BitRail bitWidth={bitWidth} onWidth={setBitWidth} bits={bits} onToggle={toggleBit} />
 
         <ExplainPanel steps={steps} />
+
+        <ScratchpadPanel perm={perm} ascii={ascii} color={color} hasInput={Boolean(value.trim())} />
 
         <HistoryPanel
           history={history}
